@@ -1,5 +1,6 @@
 # Depends on
 # - harness_connectors_azure.tf
+# - harness_connectors_kubernetes.tf
 
 # Create Testing infrastructure
 resource "harness_platform_organization" "test" {

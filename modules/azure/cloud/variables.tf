@@ -143,53 +143,48 @@ variable "execute_on_delegate" {
   default     = true
 }
 
-# [Optional] (Map) Azure Connector Credentials.
+# [Required] (Map) Azure Connector Credentials.
 variable "azure_credentials" {
   type        = map(any)
-  description = "[Optional] (Map) Azure Connector Credentials."
-  default     = {}
+  description = "[Required] (Map) Azure Connector Credentials."
 
   validation {
     condition = (
-      anytrue([
-        length(var.azure_credentials) == 0,
-        alltrue([
-          contains(["delegate", "service_principal"], lookup(var.azure_credentials, "type", "invalid")),
-          (
-            lookup(var.azure_credentials, "type", "invalid") == "delegate"
-            ?
-            lookup(var.azure_credentials, "delegate_auth", null) != null
-            ?
-            alltrue([
-              contains(["system", "user"], lower(var.azure_credentials.delegate_auth)),
-              (
-                lower(var.azure_credentials.delegate_auth) == "user"
-                ?
-                can(regex("^([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})$", lookup(var.azure_credentials, "client_id", null)))
-                :
-                true
-              )
-            ])
-            :
-            true
-            :
-            true
-          ),
-          (
-            lookup(var.azure_credentials, "type", "invalid") == "service_principal"
-            ?
-            alltrue([
-              can(regex("^([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})$", lookup(var.azure_credentials, "tenant_id", null))),
-              can(regex("^([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})$", lookup(var.azure_credentials, "client_id", null))),
-              contains(["secret", "certificate"], lower(lookup(var.azure_credentials, "secret_kind", "invalid"))),
-              can(regex("^(account|org|project)$", lookup(var.azure_credentials, "secret_location", "project"))),
-              can(regex("^([a-zA-Z0-9 _-])+$", lookup(var.azure_credentials, "secret_name", null)))
-            ])
-            :
-            true
-          )
-        ])
-
+      alltrue([
+        contains(["delegate", "service_principal"], lookup(var.azure_credentials, "type", "invalid")),
+        (
+          lookup(var.azure_credentials, "type", "invalid") == "delegate"
+          ?
+          lookup(var.azure_credentials, "delegate_auth", null) != null
+          ?
+          alltrue([
+            contains(["system", "user"], lower(var.azure_credentials.delegate_auth)),
+            (
+              lower(var.azure_credentials.delegate_auth) == "user"
+              ?
+              can(regex("^([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})$", lookup(var.azure_credentials, "client_id", null)))
+              :
+              true
+            )
+          ])
+          :
+          true
+          :
+          true
+        ),
+        (
+          lookup(var.azure_credentials, "type", "invalid") == "service_principal"
+          ?
+          alltrue([
+            can(regex("^([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})$", lookup(var.azure_credentials, "tenant_id", null))),
+            can(regex("^([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})$", lookup(var.azure_credentials, "client_id", null))),
+            contains(["secret", "certificate"], lower(lookup(var.azure_credentials, "secret_kind", "invalid"))),
+            can(regex("^(account|org|project)$", lookup(var.azure_credentials, "secret_location", "project"))),
+            can(regex("^([a-zA-Z0-9 _-])+$", lookup(var.azure_credentials, "secret_name", null)))
+          ])
+          :
+          true
+        )
       ])
     )
     error_message = <<EOF
