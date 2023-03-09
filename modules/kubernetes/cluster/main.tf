@@ -81,17 +81,12 @@ resource "harness_platform_connector_kubernetes" "cluster" {
       )
 
       # [Optional] (String) Username for the connector.
-      # username = lookup(username_password.value, "username", null)
       username = (
         lookup(username_password.value, "is_user_secret", false)
         ?
         null
         :
-        lookup(username_password.value, "secret_location", "project") != "project"
-        ?
-        "${username_password.value.secret_location}.${lower(replace(username_password.value.username, " ", ""))}"
-        :
-        lower(replace(username_password.value.username, " ", ""))
+        lookup(username_password.value, "username", null)
       )
       # [Optional] (String) Reference to the secret containing the username for the connector. To reference a secret at the organization scope, prefix 'org' to the expression: org.{identifier}. To reference a secret at the account scope, prefix 'account` to the expression: account.{identifier}.
       username_ref = (

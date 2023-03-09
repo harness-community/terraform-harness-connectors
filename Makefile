@@ -42,7 +42,7 @@ init:
 	${DOCKER_RUN} init
 
 .PHONY: plan
-plan:
+plan: fmt
 	${DOCKER_RUN} plan
 
 .PHONY: apply

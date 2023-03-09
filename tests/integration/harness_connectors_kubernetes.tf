@@ -1,6 +1,6 @@
 ####################
 #
-# Harness Connectors Azure Validations
+# Harness Connectors Kubernetes Validations
 #
 ####################
 locals {
