@@ -47,14 +47,12 @@ module "harness_connectors" {
 ## Additional Module Details
 _This module is really designed to be driven by leveraging the submodules.  For more information on each of these, you can review the associated README file_
 
-### Azure
-Create and manage new Harness Platform Azure Connectors.  Read more about this module in the [README](modules/azure/README.md)
-
-### SCM
-Create and manage new Harness Platform GitHub Connectors.  Read more about this module in the [README](modules/scm/README.md)
-
-### Artifacts
-Create and manage new Harness Platform GitHub Connectors.  Read more about this module in the [README](modules/artifacts/README.md)
+## Supported Connectors
+| Type | Name | Description | Documentation |
+| --- | --- | --- | ---  |
+| Azure | Cloud | Create and manage new Harness Platform Azure Connectors. | [README](modules/azure/README.md) |
+| Kubernetes | Cluster | Create and manage new Harness Platform Kubernetes Cluster Connectors. | [README](modules/kubernetes/cluster/README.md) |
+| Source Control Manager | GitHub | Create and manage new Harness Platform GitHub Connectors. | [README](modules/scm/githubREADME.md) |
 
 ## Contributing
 A complete [Contributors Guide](CONTRIBUTING.md) can be found in this repository

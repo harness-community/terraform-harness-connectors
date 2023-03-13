@@ -77,9 +77,63 @@ variable "project_id" {
   }
 }
 
+variable "description" {
+  type        = string
+  description = "[Optional] (String) Description of the resource."
+  default     = "Harness Connector created via Terraform"
+
+  validation {
+    condition = (
+      length(var.description) > 6
+    )
+    error_message = <<EOF
+        Validation of an object failed.
+            * [Optional] Provide an resource description.  Must be six or more characters.
+        EOF
+  }
+}
+variable "delegate_selectors" {
+  type        = list(string)
+  description = "[Optional] (Set of String) Tags to filter delegates for connection."
+  default     = []
+}
+
+variable "tags" {
+  type        = map(any)
+  description = "[Optional] Provide a Map of Tags to associate with the environment"
+  default     = {}
+
+  validation {
+    condition = (
+      length(keys(var.tags)) == length(values(var.tags))
+    )
+    error_message = <<EOF
+        Validation of an object failed.
+            * [Optional] Provide a Map of Tags to associate with the project
+        EOF
+  }
+}
+
+variable "global_tags" {
+  type        = map(any)
+  description = "[Optional] Provide a Map of Tags to associate with the project and resources created"
+  default     = {}
+
+  validation {
+    condition = (
+      length(keys(var.global_tags)) == length(values(var.global_tags))
+    )
+    error_message = <<EOF
+        Validation of an object failed.
+            * [Optional] Provide a Map of Tags to associate with the project and resources created
+        EOF
+  }
+}
+
+# Azure Cloud Configuration Specifics
 variable "type" {
   type        = string
-  description = "[Optional] Specifies the Connector type, which is AZURE by default. Can either be azure or us_government"
+  description = "[Optional] Specifies the Connector Azure Cloud type. Supported values are azure or us_government"
   default     = "azure"
 
   validation {
@@ -88,52 +142,9 @@ variable "type" {
     )
     error_message = <<EOF
         Validation of an object failed.
-            * [Required] (String) Secret Type - One of 'azure' or 'us_government'
+            * [Required] (String) Connector Azure Cloud Type - One of 'azure' or 'us_government'
         EOF
   }
-}
-
-variable "color" {
-  type        = string
-  description = "[Optional] (String) Color of the Environment."
-  default     = null
-
-  validation {
-    condition = (
-      anytrue([
-        can(regex("^#([A-Fa-f0-9]{6})", var.color)),
-        var.color == null
-      ])
-    )
-    error_message = <<EOF
-        Validation of an object failed.
-            * [Optional] Provide Pipeline Color Identifier.  Must be a valid Hex Color code.
-        EOF
-  }
-}
-
-variable "description" {
-  type        = string
-  description = "[Optional] (String) Description of the resource."
-  default     = "Harness Environment created via Terraform"
-
-  validation {
-    condition = (
-      length(var.description) > 6
-    )
-    error_message = <<EOF
-        Validation of an object failed.
-            * [Optional] Provide an Pipeline description.  Must be six or more characters.
-        EOF
-  }
-}
-
-# [Optional] (Set of String) Tags to filter delegates for connection.
-variable "delegate_selectors" {
-  type        = list(string)
-  description = "[Optional] (Set of String) Tags to filter delegates for connection."
-  default     = []
-
 }
 
 # [Optional] (Boolean) Execute on delegate or not.
@@ -151,6 +162,16 @@ variable "azure_credentials" {
   validation {
     condition = (
       alltrue([
+        (
+          alltrue([
+            for key in keys(var.azure_credentials) : (
+              contains([
+                "type", "delegate_auth", "tenant_id", "client_id",
+                "secret_kind", "secret_location", "secret_name"
+              ], key)
+            )
+          ])
+        ),
         contains(["delegate", "service_principal"], lookup(var.azure_credentials, "type", "invalid")),
         (
           lookup(var.azure_credentials, "type", "invalid") == "delegate"
@@ -197,38 +218,6 @@ variable "azure_credentials" {
             * secret_location - [Optional] (String) Location within Harness that the secret is stored.  Supported values are "account", "org", or "project"
             * secret_name - [Conditionally Required] (String) Existing Harness Secret containing Azure Client Authentication details. Mandatory if type == service_principal
               - NOTE: Secrets stored at the Account or Organization level must include correct value for the secret_location
-        EOF
-  }
-}
-
-variable "tags" {
-  type        = map(any)
-  description = "[Optional] Provide a Map of Tags to associate with the environment"
-  default     = {}
-
-  validation {
-    condition = (
-      length(keys(var.tags)) == length(values(var.tags))
-    )
-    error_message = <<EOF
-        Validation of an object failed.
-            * [Optional] Provide a Map of Tags to associate with the project
-        EOF
-  }
-}
-
-variable "global_tags" {
-  type        = map(any)
-  description = "[Optional] Provide a Map of Tags to associate with the project and resources created"
-  default     = {}
-
-  validation {
-    condition = (
-      length(keys(var.global_tags)) == length(values(var.global_tags))
-    )
-    error_message = <<EOF
-        Validation of an object failed.
-            * [Optional] Provide a Map of Tags to associate with the project and resources created
         EOF
   }
 }

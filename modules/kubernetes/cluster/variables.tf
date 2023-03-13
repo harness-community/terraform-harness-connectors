@@ -23,6 +23,7 @@ variable "identifier" {
         EOF
   }
 }
+
 variable "name" {
   type        = string
   description = "[Required] (String) Name of the resource."
@@ -37,6 +38,7 @@ variable "name" {
         EOF
   }
 }
+
 variable "organization_id" {
   type        = string
   description = "[Optional] Provide an organization reference ID.  Must exist before execution"
@@ -77,45 +79,10 @@ variable "project_id" {
   }
 }
 
-variable "type" {
-  type        = string
-  description = "[Optional] Specifies the Connector type, which is AZURE by default. Can either be azure or us_government"
-  default     = "azure"
-
-  validation {
-    condition = (
-      contains(["azure", "us_government"], lower(var.type))
-    )
-    error_message = <<EOF
-        Validation of an object failed.
-            * [Required] (String) Secret Type - One of 'azure' or 'us_government'
-        EOF
-  }
-}
-
-variable "color" {
-  type        = string
-  description = "[Optional] (String) Color of the Environment."
-  default     = null
-
-  validation {
-    condition = (
-      anytrue([
-        can(regex("^#([A-Fa-f0-9]{6})", var.color)),
-        var.color == null
-      ])
-    )
-    error_message = <<EOF
-        Validation of an object failed.
-            * [Optional] Provide Pipeline Color Identifier.  Must be a valid Hex Color code.
-        EOF
-  }
-}
-
 variable "description" {
   type        = string
   description = "[Optional] (String) Description of the resource."
-  default     = "Harness Environment created via Terraform"
+  default     = "Harness Connector created via Terraform"
 
   validation {
     condition = (
@@ -123,7 +90,7 @@ variable "description" {
     )
     error_message = <<EOF
         Validation of an object failed.
-            * [Optional] Provide an Pipeline description.  Must be six or more characters.
+            * [Optional] Provide an resource description.  Must be six or more characters.
         EOF
   }
 }
@@ -132,9 +99,41 @@ variable "delegate_selectors" {
   type        = list(string)
   description = "[Optional] (Set of String) Tags to filter delegates for connection."
   default     = []
-
 }
 
+variable "tags" {
+  type        = map(any)
+  description = "[Optional] Provide a Map of Tags to associate with the environment"
+  default     = {}
+
+  validation {
+    condition = (
+      length(keys(var.tags)) == length(values(var.tags))
+    )
+    error_message = <<EOF
+        Validation of an object failed.
+            * [Optional] Provide a Map of Tags to associate with the project
+        EOF
+  }
+}
+
+variable "global_tags" {
+  type        = map(any)
+  description = "[Optional] Provide a Map of Tags to associate with the project and resources created"
+  default     = {}
+
+  validation {
+    condition = (
+      length(keys(var.global_tags)) == length(values(var.global_tags))
+    )
+    error_message = <<EOF
+        Validation of an object failed.
+            * [Optional] Provide a Map of Tags to associate with the project and resources created
+        EOF
+  }
+}
+
+# Kubernetes Cloud Connector Specifics
 variable "delegate_credentials" {
   type        = map(any)
   description = "[Optional] (Map) Delegate Based Authentication Credentials"
@@ -214,7 +213,7 @@ variable "username_credentials" {
             * Username Based Authentication
             * master_url        - [Required] (String) The URL of the Kubernetes cluster.
             * username          - [Required] (String) Can either be username or a harness secret reference if value of is_user_secret == true
-            * is_user_secret    - [Required] (Boolean) Deterimines if the username should be sourced from a Harness Secret
+            * is_user_secret    - [Optional] (Boolean) Deterimines if the username should be sourced from a Harness Secret
             * username_location - [Optional] (String) Location within Harness that the secret username is stored.
             *                     Supported values are "account", "org", or "project"
             * secret_location   - [Optional] (String) Location within Harness that the secret is stored.
@@ -345,7 +344,7 @@ variable "openid_connect_credentials" {
             *                         NOTE: Secrets stored at the Account or Organization level must include correct value for the
             *                         client_id_location
             * username              - [Required] (String) Can either be username or a harness secret reference if value of is_user_secret == true
-            * is_user_secret        - [Required] (Boolean) Deterimines if the username should be sourced from a Harness Secret
+            * is_user_secret        - [Optional] (Boolean) Deterimines if the username should be sourced from a Harness Secret
             * username_location     - [Optional] (String) Location within Harness that the secret username is stored.
             *                         Supported values are "account", "org", or "project"
             * secret_location       - [Optional] (String) Location within Harness that the secret is stored.
@@ -353,38 +352,7 @@ variable "openid_connect_credentials" {
             * secret_name           - [Required] (String) Existing Harness Secret containing username token.
             *                         NOTE: Secrets stored at the Account or Organization level must include correct value for the
             *                         secret_location
+            * scopes                - [Optional]  (List of String) Scopes to request for the connector.
           EOF
-  }
-}
-
-variable "tags" {
-  type        = map(any)
-  description = "[Optional] Provide a Map of Tags to associate with the environment"
-  default     = {}
-
-  validation {
-    condition = (
-      length(keys(var.tags)) == length(values(var.tags))
-    )
-    error_message = <<EOF
-        Validation of an object failed.
-            * [Optional] Provide a Map of Tags to associate with the project
-        EOF
-  }
-}
-
-variable "global_tags" {
-  type        = map(any)
-  description = "[Optional] Provide a Map of Tags to associate with the project and resources created"
-  default     = {}
-
-  validation {
-    condition = (
-      length(keys(var.global_tags)) == length(values(var.global_tags))
-    )
-    error_message = <<EOF
-        Validation of an object failed.
-            * [Optional] Provide a Map of Tags to associate with the project and resources created
-        EOF
   }
 }

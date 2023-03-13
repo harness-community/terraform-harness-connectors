@@ -67,7 +67,6 @@ module "connector_kubernetes_cluster_service_account" {
   service_account_credentials = {
     master_url  = "https://k8s.url"
     secret_name = local.test_secret_name
-
   }
   global_tags = local.common_tags
 
@@ -88,7 +87,6 @@ module "connector_kubernetes_cluster_username" {
     master_url  = "https://k8s.url"
     username    = "master"
     secret_name = local.test_secret_name
-
   }
   global_tags = local.common_tags
 
@@ -110,7 +108,6 @@ module "connector_kubernetes_cluster_username_secret" {
     username       = local.test_secret_name
     is_user_secret = true
     secret_name    = local.test_secret_name
-
   }
   global_tags = local.common_tags
 
@@ -132,7 +129,6 @@ module "connector_kubernetes_cluster_certificate" {
     certificate          = local.test_secret_name
     client_key_algorithm = "rsa"
     client_key           = local.test_secret_name
-
   }
   global_tags = local.common_tags
 
@@ -155,7 +151,6 @@ module "connector_kubernetes_cluster_certificate_ca_cert" {
     client_key_algorithm = "rsa"
     client_key           = local.test_secret_name
     ca_cert              = local.test_secret_name
-
   }
   global_tags = local.common_tags
 
@@ -178,7 +173,6 @@ module "connector_kubernetes_cluster_certificate_passphrase" {
     client_key_algorithm = "rsa"
     client_key           = local.test_secret_name
     passphrase           = local.test_secret_name
-
   }
   global_tags = local.common_tags
 

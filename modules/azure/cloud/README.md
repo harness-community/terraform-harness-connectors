@@ -1,8 +1,14 @@
-# Terraform Modules for Harness Environments
-Terraform Module for creating and managing Harness Environments
+# Terraform Modules for Harness Connectors - Azure Cloud
+Terraform Module for creating and managing the Harness Connector for Azure Cloud
 
 ## Summary
-This module handle the creation and managment of Environments by leveraging the Harness Terraform provider
+This module handle the creation and managment of Connectors by leveraging the Harness Terraform provider
+
+## Supported Terraform Versions
+    - v1.3.7
+    - v1.3.8
+    - v1.3.9
+    - v1.4.0
 
 ## Providers
 
@@ -10,13 +16,12 @@ This module handle the creation and managment of Environments by leveraging the 
 terraform {
   required_providers {
     harness = {
-      source = "harness/harness"
+      source  = "harness/harness"
+      version = "~> 0.14.0"
     }
     time = {
-      source = "hashicorp/time"
-    }
-    random = {
-      source = "hashicorp/random"
+      source  = "hashicorp/time"
+      version = "~> 0.9.1"
     }
   }
 }
@@ -29,135 +34,100 @@ _Note: When the identifier variable is not provided, the module will automatical
 
 | Name | Description | Type | Default Value | Mandatory |
 | --- | --- | --- | --- | --- |
-| name | [Required] (String) Name of the resource. | string |  | X |
-| type | [Required] (String) The type of environment. Valid values are nonprod or prod| string | nonprod | |
+| name | [Required] Name of the connector. | string |  | X |
 | identifier | [Optional] Provide a custom identifier.  More than 2 but less than 128 characters and can only include alphanumeric or '_' | string | null | |
 | organization_id | [Optional] Provide an organization reference ID. Must exist before execution | string | null | |
 | project_id | [Optional] Provide an project reference ID. Must exist before execution | string | null | |
-| description | [Optional] (String) Description of the resource. | string | Harness Environment created via Terraform | |
-| color | [Optional] (String) Color of the Environment. | string | _Automatically selected if no value provided_ | |
-| yaml_file | [Optional] (String) File Path to yaml snippet to include. Must not be provided in conjuction with var.yaml_data.| string | null | One of `yaml_file` or `yaml_data` must be provided. |
-| yaml_data | [Optional] (String) Description of the resource. | string | null | One of `yaml_file` or `yaml_data` must be provided. |
-| yaml_render | [Optional] (Boolean) Determines if the pipeline data should be templatized or is a full pipeline reference file | bool | true | |
+| description | [Optional] Description of the resource. | string | Harness Connector created via Terraform | |
+| delegate_selectors | [Optional] Tags to filter delegates for connection.| list | [] | |
+| type | [Required] Specifies the Connector Azure Cloud type. Supported values are azure or us_government| string | azure | |
+| execute_on_delegate | [Optional] Execute on delegate or not. | boolean | true | |
+| azure_credentials | [Required] Azure Connector Credentials. | map | | See block definition below |
 | tags | [Optional] Provide a Map of Tags to associate with the project | map(any) | {} | |
 | global_tags | [Optional] Provide a Map of Tags to associate with the project and resources created | map(any) | {} | |
 
+### Variables - azure_credentials
+
+| Name | Description | Type | Default Value | Mandatory |
+| --- | --- | --- | --- | --- |
+| type | [Required] Type can either be delegate or service_principal. | string |  | X |
+| delegate_auth | [Optional] Type can either be system or user. Valid if type == delegate | string | system | |
+| tenant_id | [Conditionally Required] Azure Tenant ID. Mandatory if type == service_principal | string | | X |
+| client_id | [Conditionally Required] Azure Service Principal or Managed Identity ID. Mandatory if type == delegate && delegate_auth == user OR type == service_principal | string | | X|
+| secret_kind | [Conditionally Required] Azure Client Authentication model can be either secret or certifiate. Mandatory if type == service_principal | string | | X |
+| secret_location | [Optional] Location within Harness that the secret is stored.  Supported values are "account", "org", or "project" | string | project | |
+| secret_name | [Conditionally Required] Existing Harness Secret containing Azure Client Authentication details. Mandatory if type == service_principal | string | | X|
+
 ## Examples
-### Build a single Environment with minimal inputs using rendered payload
+### Build a single Connector using delegate System-Assigned Managed Identity
 ```
-module "environments" {
-  source = "git@github.com:harness-community/terraform-harness-delivery.git//environments"
+module "azure_cloud" {
+  source = "git@github.com:harness-community/terraform-harness-delivery.git//modules/azure/cloud"
 
-  name             = "test-environment"
-  organization_id  = "myorg"
-  project_id       = "myproject"
-  type             = "nonprod"
+  name                = "azure-global-connector"
+  organization_id     = "myorg"
+  project_id          = "myproject"
+  delegate_selectors  = ["account"]
+  execute_on_delegate = true
+  azure_credentials = {
+    type = "delegate"
+  }
 }
 ```
 
-### Build a single Environment with yaml_file overrides using rendered payload
+### Build a single Connector using delegate User-Assigned Managed Identity
 ```
-module "environments" {
-  source = "git@github.com:harness-community/terraform-harness-content.git//environments"
+module "azure_cloud" {
+  source = "git@github.com:harness-community/terraform-harness-delivery.git//modules/azure/cloud"
 
-  name             = "test-example"
-  organization_id  = "myorg"
-  project_id       = "myproject"
-  type             = "nonprod"
-  yaml_file        = "environments/test-example.yaml"
-
+  name                = "azure-lob-connector"
+  organization_id     = "myorg"
+  project_id          = "myproject"
+  delegate_selectors  = ["account"]
+  execute_on_delegate = true
+  azure_credentials = {
+    type          = "delegate"
+    delegate_auth = "user"
+    client_id     = "00000000-0000-0000-0000-000000000000"
+  }
 }
 ```
 
-### Build a single Environment with raw yaml_data
+### Build a single Connector using Azure Service Principal with ClientSecret
 ```
-module "environments" {
-  source = "git@github.com:harness-community/terraform-harness-content.git//environments"
+module "azure_cloud" {
+  source = "git@github.com:harness-community/terraform-harness-delivery.git//modules/azure/cloud"
 
-  name             = "test-example"
-  organization_id  = "myorg"
-  project_id       = "myproject"
-  type             = "nonprod"
-  yaml_render      = false
-  yaml_data        = <<EOT
-  environment:
-    name: test-example
-    identifier: test_example
-    projectIdentifier: myproject
-    orgIdentifier: myorg
-    description: Harness Environment created via Terraform
-    type: PreProduction
-    overrides:
-      manifests:
-      - manifest:
-          identifier: manifestEnv
-          spec:
-            store:
-              spec:
-                branch: master
-                connectorRef: <+input>
-                gitFetchType: Branch
-                paths:
-                - file1
-                repoName: <+input>
-              type: Git
-          type: Values
-  EOT
-
+  name                = "azure-lob-connector"
+  organization_id     = "myorg"
+  project_id          = "myproject"
+  azure_credentials = {
+    type            = "service_principal"
+    tenant_id       = "00000000-0000-0000-0000-000000000000"
+    client_id       = "00000000-0000-0000-0000-000000000000"
+    secret_kind     = "secret"
+    secret_location = "project"
+    secret_name     = "azure-lob-credentials"
+  }
 }
 ```
 
-### Build multiple Environments
+### Build a single Connector using Azure Service Principal with ClientCertificate
 ```
-variable "environment_list" {
-    type = list(map())
-    default = [
-        {
-            name        = "cloud1"
-            tags        = {
-                role    = "nonprod-cloud1"
-            }
-        },
-        {
-            name        = "cloud1-prod"
-            description = "Production Environment in Cloud1"
-            type        = "prod"
-            yaml_file   = "templates/environments/cloud1-prod-overrides.yaml"
-            tags        = {
-                role    = "prod-cloud1"
-            }
-        },
-        {
-            name        = "cloud2"
-            type        = "nonprod"
-            yaml_render = false
-            yaml_file   = "templates/environments/cloud2-nonprod-full.yaml"
-            tags        = {
-                role    = "nonprod-cloud2"
-            }
-        }
-    ]
-}
+module "azure_cloud" {
+  source = "git@github.com:harness-community/terraform-harness-delivery.git//modules/azure/cloud"
 
-variable "global_tags" {
-    type = map()
-    default = {
-        environment = "NonProd"
-    }
-}
-
-module "environments" {
-  source = "git@github.com:harness-community/terraform-harness-content.git//environments"
-  for_each = { for environment in var.environment_list : environment.name => environment }
-
-  name             = each.value.name
-  description      = lookup(each.value, "description", "Harness Environment for ${each.value.name}")
-  type             = lookup(each.value, "type", "nonprod")
-  yaml_render      = lookup(each.value, "render", true)
-  yaml_file        = lookup(each.value, "yaml_file", null)
-  yaml_data        = lookup(each.value, "yaml_data", null)
-  tags             = lookup(each.value, "tags", {})
-  global_tags      = var.global_tags
+  name                = "azure-lob-connector"
+  organization_id     = "myorg"
+  project_id          = "myproject"
+  azure_credentials = {
+    type            = "service_principal"
+    tenant_id       = "00000000-0000-0000-0000-000000000000"
+    client_id       = "00000000-0000-0000-0000-000000000000"
+    secret_kind     = "certificate"
+    secret_location = "project"
+    secret_name     = "azure-lob-certificate"
+  }
 }
 ```
 

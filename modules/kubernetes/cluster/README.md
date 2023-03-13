@@ -1,8 +1,14 @@
-# Terraform Modules for Harness Environments
-Terraform Module for creating and managing Harness Environments
+# Terraform Modules for Harness Connectors - Kubernetes Cluster
+Terraform Module for creating and managing the Harness Connector for Kubernetes Cluster
 
 ## Summary
-This module handle the creation and managment of Environments by leveraging the Harness Terraform provider
+This module handle the creation and managment of Connectors by leveraging the Harness Terraform provider
+
+## Supported Terraform Versions
+    - v1.3.7
+    - v1.3.8
+    - v1.3.9
+    - v1.4.0
 
 ## Providers
 
@@ -10,13 +16,12 @@ This module handle the creation and managment of Environments by leveraging the 
 terraform {
   required_providers {
     harness = {
-      source = "harness/harness"
+      source  = "harness/harness"
+      version = "~> 0.14.0"
     }
     time = {
-      source = "hashicorp/time"
-    }
-    random = {
-      source = "hashicorp/random"
+      source  = "hashicorp/time"
+      version = "~> 0.9.1"
     }
   }
 }
@@ -27,137 +32,160 @@ terraform {
 
 _Note: When the identifier variable is not provided, the module will automatically format the identifier based on the provided resource name_
 
+_Note: Only one of the credential blocks can be provided.  If not chosen, the credential model will default to delegate-based credentials and uses the provided delegate_selectors.)
+
 | Name | Description | Type | Default Value | Mandatory |
 | --- | --- | --- | --- | --- |
-| name | [Required] (String) Name of the resource. | string |  | X |
-| type | [Required] (String) The type of environment. Valid values are nonprod or prod| string | nonprod | |
+| name | [Required] Name of the connector. | string |  | X |
 | identifier | [Optional] Provide a custom identifier.  More than 2 but less than 128 characters and can only include alphanumeric or '_' | string | null | |
 | organization_id | [Optional] Provide an organization reference ID. Must exist before execution | string | null | |
 | project_id | [Optional] Provide an project reference ID. Must exist before execution | string | null | |
-| description | [Optional] (String) Description of the resource. | string | Harness Environment created via Terraform | |
-| color | [Optional] (String) Color of the Environment. | string | _Automatically selected if no value provided_ | |
-| yaml_file | [Optional] (String) File Path to yaml snippet to include. Must not be provided in conjuction with var.yaml_data.| string | null | One of `yaml_file` or `yaml_data` must be provided. |
-| yaml_data | [Optional] (String) Description of the resource. | string | null | One of `yaml_file` or `yaml_data` must be provided. |
-| yaml_render | [Optional] (Boolean) Determines if the pipeline data should be templatized or is a full pipeline reference file | bool | true | |
+| description | [Optional] Description of the resource. | string | Harness Connector created via Terraform | |
+| delegate_selectors | [Optional] Tags to filter delegates for connection.| list | [] | |
+| delegate_credentials | [Optional] Delegate Based Authentication Credentials | map | | See block definition below |
+| service_account_credentials | [Optional] Service Account Based Authentication Credentials | map | | See block definition below |
+| username_credentials | [Optional] Username Based Authentication Credentials | map | | See block definition below |
+| certificate_credentials | [Optional] Certificate Based Authentication Credentials | map | | See block definition below |
+| openid_connect_credentials | [Optional] Certificate Based Authentication Credentials | map | | See block definition below |
 | tags | [Optional] Provide a Map of Tags to associate with the project | map(any) | {} | |
 | global_tags | [Optional] Provide a Map of Tags to associate with the project and resources created | map(any) | {} | |
 
+### Variables - delegate_credentials
+
+| Name | Description | Type | Default Value | Mandatory |
+| --- | --- | --- | --- | --- |
+| delegates | [Required] The URL of the Kubernetes cluster. | string | | X |
+
+### Variables - service_account_credentials
+
+| Name | Description | Type | Default Value | Mandatory |
+| --- | --- | --- | --- | --- |
+| master_url | [Required] The URL of the Kubernetes cluster | string | | X |
+| secret_location | [Optional] Location within Harness that the secret is stored. Supported values are "account", "org", or "project" | string | project | |
+| secret_name | [Required] Existing Harness Secret containing service_account token. | string | | X |
+
+### Variables - username_credentials
+
+| Name | Description | Type | Default Value | Mandatory |
+| --- | --- | --- | --- | --- |
+| master_url | [Required] The URL of the Kubernetes cluster | string | | X |
+| username |[Required] Can either be username or a harness secret reference if value of is_user_secret == true | string | | X |
+| is_user_secret | [Optional] (Boolean) Deterimines if the username should be sourced from a Harness Secret | boolean | false | |
+| username_location | [Optional] Location within Harness that the secret is stored. Supported values are "account", "org", or "project" | string | project | |
+| secret_location | [Optional] Location within Harness that the secret is stored. Supported values are "account", "org", or "project" | string | project | |
+| secret_name | [Required] Existing Harness Secret containing service_account token. | string | | X |
+
+### Variables - certificate_credentials
+
+| Name | Description | Type | Default Value | Mandatory |
+| --- | --- | --- | --- | --- |
+| master_url | [Required] The URL of the Kubernetes cluster | string | | X |
+| client_key_location | [Optional] Location within Harness that the secret is stored. Supported values are "account", "org", or "project" | string | project | |
+| client_key | [Required] Existing Harness Secret containing client_key reference id. | string | | X |
+| certificate_location | [Optional] Location within Harness that the secret is stored. Supported values are "account", "org", or "project" | string | project | |
+| certificate | [Required] Existing Harness Secret containing certificate reference id. | string | | X |
+| ca_cert_location | [Optional] Location within Harness that the secret is stored. Supported values are "account", "org", or "project" | string | project | |
+| ca_cert | [Optional] Existing Harness Secret containing certificate reference id. | string | | |
+| passphrase_location | [Optional] Location within Harness that the secret is stored. Supported values are "account", "org", or "project" | string | project | |
+| passphrase | [Optional] Existing Harness Secret containing client_key passphrase reference id. | string | | |
+
+### Variables - openid_connect_credentials
+
+| Name | Description | Type | Default Value | Mandatory |
+| --- | --- | --- | --- | --- |
+| master_url | [Required] The URL of the Kubernetes cluster | string | | X |
+| issuer_url | [Required] (String) The URL of the OpenID Connect issuer. | string | | X |
+| client_id_location | [Optional] Location within Harness that the secret is stored. Supported values are "account", "org", or "project" | string | project | |
+| client_id | [Required] Existing Harness Secret containing client_id reference id. | string | | X |
+| username |[Required] Can either be username or a harness secret reference if value of is_user_secret == true | string | | X |
+| is_user_secret | [Optional] (Boolean) Deterimines if the username should be sourced from a Harness Secret | boolean | false | |
+| username_location | [Optional] Location within Harness that the secret is stored. Supported values are "account", "org", or "project" | string | project | |
+| secret_location | [Optional] Location within Harness that the secret is stored. Supported values are "account", "org", or "project" | string | project | |
+| secret_name | [Required] Existing Harness Secret containing service_account token. | string | | X |
+| scopes | [Optional]  (List of String) Scopes to request for the connector. | list | [] | |
+
 ## Examples
-### Build a single Environment with minimal inputs using rendered payload
+### Build a single Connector using delegate authentication
 ```
-module "environments" {
-  source = "git@github.com:harness-community/terraform-harness-delivery.git//environments"
+module "kubernetes_cluster" {
+  source = "git@github.com:harness-community/terraform-harness-delivery.git//modules/kubernetes/cluster"
 
-  name             = "test-environment"
-  organization_id  = "myorg"
-  project_id       = "myproject"
-  type             = "nonprod"
+  name                = "kubernetes-global-connector"
+  organization_id     = "myorg"
+  project_id          = "myproject"
+  delegate_selectors  = ["account"]
 }
 ```
 
-### Build a single Environment with yaml_file overrides using rendered payload
+### Build a single Connector using service-account authentication
 ```
-module "environments" {
-  source = "git@github.com:harness-community/terraform-harness-content.git//environments"
+module "kubernetes_cluster" {
+  source = "git@github.com:harness-community/terraform-harness-delivery.git//modules/kubernetes/cluster"
 
-  name             = "test-example"
-  organization_id  = "myorg"
-  project_id       = "myproject"
-  type             = "nonprod"
-  yaml_file        = "environments/test-example.yaml"
-
+  name                = "kubernetes-global-connector"
+  organization_id     = "myorg"
+  project_id          = "myproject"
+  delegate_selectors  = ["account"]
+  service_account_credentials = {
+    master_url  = "https://k8s.url"
+    secret_name = local.test_secret_name
+  }
 }
 ```
 
-### Build a single Environment with raw yaml_data
+### Build a single Connector using username authentication
 ```
-module "environments" {
-  source = "git@github.com:harness-community/terraform-harness-content.git//environments"
+module "kubernetes_cluster" {
+  source = "git@github.com:harness-community/terraform-harness-delivery.git//modules/kubernetes/cluster"
 
-  name             = "test-example"
-  organization_id  = "myorg"
-  project_id       = "myproject"
-  type             = "nonprod"
-  yaml_render      = false
-  yaml_data        = <<EOT
-  environment:
-    name: test-example
-    identifier: test_example
-    projectIdentifier: myproject
-    orgIdentifier: myorg
-    description: Harness Environment created via Terraform
-    type: PreProduction
-    overrides:
-      manifests:
-      - manifest:
-          identifier: manifestEnv
-          spec:
-            store:
-              spec:
-                branch: master
-                connectorRef: <+input>
-                gitFetchType: Branch
-                paths:
-                - file1
-                repoName: <+input>
-              type: Git
-          type: Values
-  EOT
-
+  name                = "kubernetes-global-connector"
+  organization_id     = "myorg"
+  project_id          = "myproject"
+  delegate_selectors  = ["account"]
+  username_credentials = {
+    master_url  = "https://k8s.url"
+    username    = "master"
+    secret_name = local.test_secret_name
+  }
 }
 ```
 
-### Build multiple Environments
+### Build a single Connector using basic certificate authentication
 ```
-variable "environment_list" {
-    type = list(map())
-    default = [
-        {
-            name        = "cloud1"
-            tags        = {
-                role    = "nonprod-cloud1"
-            }
-        },
-        {
-            name        = "cloud1-prod"
-            description = "Production Environment in Cloud1"
-            type        = "prod"
-            yaml_file   = "templates/environments/cloud1-prod-overrides.yaml"
-            tags        = {
-                role    = "prod-cloud1"
-            }
-        },
-        {
-            name        = "cloud2"
-            type        = "nonprod"
-            yaml_render = false
-            yaml_file   = "templates/environments/cloud2-nonprod-full.yaml"
-            tags        = {
-                role    = "nonprod-cloud2"
-            }
-        }
-    ]
+module "kubernetes_cluster" {
+  source = "git@github.com:harness-community/terraform-harness-delivery.git//modules/kubernetes/cluster"
+
+  name                = "kubernetes-global-connector"
+  organization_id     = "myorg"
+  project_id          = "myproject"
+  delegate_selectors  = ["account"]
+  certificate_credentials = {
+    master_url           = "https://k8s.url"
+    certificate          = local.test_secret_name
+    client_key_algorithm = "rsa"
+    client_key           = local.test_secret_name
+  }
 }
+```
 
-variable "global_tags" {
-    type = map()
-    default = {
-        environment = "NonProd"
-    }
-}
+### Build a single Connector using openid_connect authentication
+```
+module "kubernetes_cluster" {
+  source = "git@github.com:harness-community/terraform-harness-delivery.git//modules/kubernetes/cluster"
 
-module "environments" {
-  source = "git@github.com:harness-community/terraform-harness-content.git//environments"
-  for_each = { for environment in var.environment_list : environment.name => environment }
-
-  name             = each.value.name
-  description      = lookup(each.value, "description", "Harness Environment for ${each.value.name}")
-  type             = lookup(each.value, "type", "nonprod")
-  yaml_render      = lookup(each.value, "render", true)
-  yaml_file        = lookup(each.value, "yaml_file", null)
-  yaml_data        = lookup(each.value, "yaml_data", null)
-  tags             = lookup(each.value, "tags", {})
-  global_tags      = var.global_tags
+  name                = "kubernetes-global-connector"
+  organization_id     = "myorg"
+  project_id          = "myproject"
+  delegate_selectors  = ["account"]
+  openid_connect_credentials = {
+    master_url  = "https://k8s.url"
+    issuer_url  = "https://k8s.url"
+    client_id   = local.test_secret_name
+    password    = local.test_secret_name
+    username    = "main"
+    secret_name = local.test_secret_name
+    scopes      = ["all"]
+  }
 }
 ```
 

@@ -23,6 +23,7 @@ variable "identifier" {
         EOF
   }
 }
+
 variable "name" {
   type        = string
   description = "[Required] (String) Name of the resource."
@@ -37,6 +38,7 @@ variable "name" {
         EOF
   }
 }
+
 variable "organization_id" {
   type        = string
   description = "[Optional] Provide an organization reference ID.  Must exist before execution"
@@ -80,7 +82,7 @@ variable "project_id" {
 variable "description" {
   type        = string
   description = "[Optional] (String) Description of the resource."
-  default     = "Harness Environment created via Terraform"
+  default     = "Harness Connector created via Terraform"
 
   validation {
     condition = (
@@ -88,17 +90,15 @@ variable "description" {
     )
     error_message = <<EOF
         Validation of an object failed.
-            * [Optional] Provide an Pipeline description.  Must be six or more characters.
+            * [Optional] Provide an resource description.  Must be six or more characters.
         EOF
   }
 }
 
-# [Optional] (Set of String) Tags to filter delegates for connection.
 variable "delegate_selectors" {
   type        = list(string)
   description = "[Optional] (Set of String) Tags to filter delegates for connection."
   default     = []
-
 }
 
 # [Optional] (Boolean) Execute on delegate or not.
@@ -257,17 +257,17 @@ variable "api_credentials" {
             * API Token Authentication
             * token_location - [Optional] Location within Harness that the secret is stored.
             *                   Supported values are "account", "org", or "project"
-            * token_name           - [Conditionaly Required] If 'type == ssh' then provide an existing Harness Secret
-            *                        containing ssh_key.
+            * token_name           - [Conditionaly Required] If 'type == token' then provide an existing Harness Secret
+            *                        containing token.
             *                        NOTE: Secrets stored at the Account or Organization level must include correct value for the
             *                        secret_location
             * API GitHub App Authentication
-            * application_id       - [Conditionaly Required] If 'type == http' then Enter the GitHub App ID from the GitHub App General tab.
-            * installation_id      - [Conditionaly Required] If 'type == http' then Enter the Installation ID located in the URL of the installed GitHub App.
+            * application_id       - [Conditionaly Required] If 'type == github_app' then Enter the GitHub App ID from the GitHub App General tab.
+            * installation_id      - [Conditionaly Required] If 'type == github_app' then Enter the Installation ID located in the URL of the installed GitHub App.
             * private_key_location - [Optional] Location within Harness that the secret is stored.
             *                        Supported values are "account", "org", or "project"
-            * private_key          - [Conditionaly Required] If 'type == ssh' then provide an existing Harness Secret
-            *                        containing ssh_key.
+            * private_key          - [Conditionaly Required] If 'type == github_app' then provide an existing Harness Secret
+            *                        containing private_key.
             *                        NOTE: Secrets stored at the Account or Organization level must include correct value for the
             *                        secret_location
           EOF
