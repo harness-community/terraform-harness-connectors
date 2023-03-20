@@ -58,6 +58,12 @@ _Note: When the identifier variable is not provided, the module will automatical
 | secret_location | [Optional] Location within Harness that the secret is stored.  Supported values are "account", "org", or "project" | string | project | |
 | secret_name | [Conditionally Required] Existing Harness Secret containing Azure Client Authentication details. Mandatory if type == service_principal | string | | X|
 
+## Outputs
+| Name | Description | Value |
+| --- | --- | --- |
+| details | Details for the created Harness connector | Map containing details of created connector
+| connector_details | [Deprecated] Details for the created Harness connector | Map containing details of created connector
+
 ## Examples
 ### Build a single Connector using delegate System-Assigned Managed Identity
 ```
