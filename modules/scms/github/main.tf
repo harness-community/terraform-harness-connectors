@@ -40,30 +40,30 @@ resource "harness_platform_connector_github" "github" {
           username = (
             lookup(credentials.value, "is_user_secret", false)
             ?
-              null
+            null
             :
-              lookup(credentials.value, "username", null)
+            lookup(credentials.value, "username", null)
           )
           # [Required] (String) Reference to a secret containing the personal access to use for authentication.
           token_ref = (
             lookup(credentials.value, "secret_location", "project") != "project"
             ?
-              "${credentials.value.secret_location}.${lower(replace(credentials.value.password, " ", ""))}"
+            "${credentials.value.secret_location}.${lower(replace(credentials.value.password, " ", ""))}"
             :
-              lower(replace(credentials.value.password, " ", ""))
+            lower(replace(credentials.value.password, " ", ""))
           )
 
           # [Optional] (String) Reference to a secret containing the username to use for authentication.
           username_ref = (
             lookup(credentials.value, "is_user_secret", false)
             ?
-              lookup(credentials.value, "secret_location", "project") != "project"
-              ?
-                "${credentials.value.secret_location}.${lower(replace(credentials.value.username, " ", ""))}"
-              :
-                lower(replace(credentials.value.username, " ", ""))
+            lookup(credentials.value, "secret_location", "project") != "project"
+            ?
+            "${credentials.value.secret_location}.${lower(replace(credentials.value.username, " ", ""))}"
             :
-              null
+            lower(replace(credentials.value.username, " ", ""))
+            :
+            null
           )
 
         }
@@ -73,11 +73,11 @@ resource "harness_platform_connector_github" "github" {
         content {
           # [Required] (String) Application ID of the Azure App.
           ssh_key_ref = (
-              lookup(credentials.value, "secret_location", "project") != "project"
-              ?
-                "${credentials.value.secret_location}.${lower(replace(credentials.value.ssh_key, " ", ""))}"
-              :
-                lower(replace(credentials.value.ssh_key, " ", ""))
+            lookup(credentials.value, "secret_location", "project") != "project"
+            ?
+            "${credentials.value.secret_location}.${lower(replace(credentials.value.ssh_key, " ", ""))}"
+            :
+            lower(replace(credentials.value.ssh_key, " ", ""))
           )
         }
       }
@@ -97,9 +97,9 @@ resource "harness_platform_connector_github" "github" {
       token_ref = (
         lookup(api_authentication.value, "token_location", "project") != "project"
         ?
-          "${api_authentication.value.token_location}.${lower(replace(api_authentication.value.token_name, " ", ""))}"
+        "${api_authentication.value.token_location}.${lower(replace(api_authentication.value.token_name, " ", ""))}"
         :
-          lower(replace(api_authentication.value.token_name, " ", ""))
+        lower(replace(api_authentication.value.token_name, " ", ""))
       )
     }
   }
@@ -122,9 +122,9 @@ resource "harness_platform_connector_github" "github" {
         private_key_ref = (
           lookup(api_authentication.value, "private_key_location", "project") != "project"
           ?
-            "${api_authentication.value.private_key_location}.${lower(replace(api_authentication.value.private_key, " ", ""))}"
+          "${api_authentication.value.private_key_location}.${lower(replace(api_authentication.value.private_key, " ", ""))}"
           :
-            lower(replace(api_authentication.value.private_key, " ", ""))
+          lower(replace(api_authentication.value.private_key, " ", ""))
         )
       }
     }

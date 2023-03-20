@@ -10,3 +10,11 @@ output "connector_details" {
   value       = harness_platform_connector_azure_cloud_provider.azure
   description = "Details for the created Harness Connector"
 }
+
+output "details" {
+  depends_on = [
+    time_sleep.connector_setup
+  ]
+  value       = harness_platform_connector_azure_cloud_provider.azure
+  description = "Details for the created Harness Connector"
+}
