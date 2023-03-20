@@ -104,6 +104,12 @@ _Note: Only one of the credential blocks can be provided.  If not chosen, the cr
 | secret_name | [Required] Existing Harness Secret containing service_account token. | string | | X |
 | scopes | [Optional]  (List of String) Scopes to request for the connector. | list | [] | |
 
+## Outputs
+| Name | Description | Value |
+| --- | --- | --- |
+| details | Details for the created Harness connector | Map containing details of created connector
+| connector_details | [Deprecated] Details for the created Harness connector | Map containing details of created connector
+
 ## Examples
 ### Build a single Connector using delegate authentication
 ```
