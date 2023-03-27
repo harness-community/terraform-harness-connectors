@@ -53,8 +53,6 @@ resource "harness_platform_connector_aws" "aws" {
   }
 }
 
-
-  
 # When creating a new Connector, there is a potential race-condition
 # as the connector comes up.  This resource will introduce
 # a slight delay in further execution to wait for the resources to
