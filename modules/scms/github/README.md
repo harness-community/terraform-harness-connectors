@@ -73,6 +73,12 @@ _Note: Only one of the credential blocks can be provided.  If not chosen, the cr
 | private_key_location | [Optional] Location within Harness that the secret is stored. Supported values are "account", "org", or "project" | string | project | |
 | private_key | [Required] Provide an existing Harness Secret containing private_key | string | | If 'type == github_app' |
 
+## Outputs
+| Name | Description | Value |
+| --- | --- | --- |
+| details | Details for the created Harness connector | Map containing details of created connector
+| connector_details | [Deprecated] Details for the created Harness connector | Map containing details of created connector
+
 ## Examples
 ### Build a single Connector using http authentication
 ```

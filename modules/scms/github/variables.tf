@@ -158,23 +158,23 @@ variable "github_credentials" {
             )
           ])
         ),
-        contains(["http","ssh"], lower(lookup(var.github_credentials, "type", "invalid"))) &&
+        contains(["http", "ssh"], lower(lookup(var.github_credentials, "type", "invalid"))) &&
         (
           lower(lookup(var.github_credentials, "type", "http")) != "ssh"
           ?
-            lookup(var.github_credentials, "username", null) != null &&
-            can(regex("^(account|org|project)$", lookup(var.github_credentials, "secret_location", "project"))) &&
-            can(regex("^([a-zA-Z0-9 _-])+$", lookup(var.github_credentials, "password", null)))
+          lookup(var.github_credentials, "username", null) != null &&
+          can(regex("^(account|org|project)$", lookup(var.github_credentials, "secret_location", "project"))) &&
+          can(regex("^([a-zA-Z0-9 _-])+$", lookup(var.github_credentials, "password", null)))
           :
-            true
+          true
         ),
         (
           lower(lookup(var.github_credentials, "type", "http")) == "ssh"
           ?
-            can(regex("^(account|org|project)$", lookup(var.github_credentials, "secret_location", "project"))) &&
-            can(regex("^([a-zA-Z0-9 _-])+$", lookup(var.github_credentials, "ssh_key", null)))
+          can(regex("^(account|org|project)$", lookup(var.github_credentials, "secret_location", "project"))) &&
+          can(regex("^([a-zA-Z0-9 _-])+$", lookup(var.github_credentials, "ssh_key", null)))
           :
-            true
+          true
         )
       ])
     )
@@ -229,26 +229,26 @@ variable "api_credentials" {
               (
                 lower(lookup(var.api_credentials, "type", null)) == "token"
                 ?
-                  can(regex("^(account|org|project)$", lookup(var.api_credentials, "token_location", "project"))) &&
-                  can(regex("^([a-zA-Z0-9 _-])+$", lookup(var.api_credentials, "token_name", null)))
+                can(regex("^(account|org|project)$", lookup(var.api_credentials, "token_location", "project"))) &&
+                can(regex("^([a-zA-Z0-9 _-])+$", lookup(var.api_credentials, "token_name", null)))
                 :
-                  true
+                true
               ) &&
               (
                 lower(lookup(var.api_credentials, "type", null)) == "github_app"
                 ?
-                  lookup(var.api_credentials, "application_id", null) != null &&
-                  lookup(var.api_credentials, "installation_id", null) != null &&
-                  can(regex("^(account|org|project)$", lookup(var.api_credentials, "private_key_location", "project"))) &&
-                  can(regex("^([a-zA-Z0-9 _-])+$", lookup(var.api_credentials, "private_key", null)))
+                lookup(var.api_credentials, "application_id", null) != null &&
+                lookup(var.api_credentials, "installation_id", null) != null &&
+                can(regex("^(account|org|project)$", lookup(var.api_credentials, "private_key_location", "project"))) &&
+                can(regex("^([a-zA-Z0-9 _-])+$", lookup(var.api_credentials, "private_key", null)))
                 :
-                  true
+                true
               )
             )
           ])
         )
         :
-          true
+        true
       ])
     )
     error_message = <<EOF
