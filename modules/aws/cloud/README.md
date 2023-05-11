@@ -109,7 +109,7 @@ module "aws_cloud" {
   organization_id     = "myorg"
   project_id          = "myproject"
   execute_on_delegate = true
-  azure_credentials = {
+  credentials = {
     type = "irsa"
     delegate_selectors =["delegate1"]
   }
