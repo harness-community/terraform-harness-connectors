@@ -1,6 +1,6 @@
 ####################
 #
-# Harness Connector Azure Cloud Local Variables
+# Harness Connector AWS Cloud Local Variables
 #
 ####################
 locals {

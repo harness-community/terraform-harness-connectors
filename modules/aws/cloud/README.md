@@ -73,9 +73,8 @@ module "aws_cloud" {
   name                = "aws-global-connector"
   organization_id     = "myorg"
   project_id          = "myproject"
-  delegate_selectors  = ["account"]
   execute_on_delegate = true
-  azure_credentials = {
+  credentials = {
     type = "manual"
     access_key = "AWS_ACCESS_KEY"
     secret_key_ref = "HARNESS_SECRET REF"
@@ -92,11 +91,10 @@ module "aws_cloud" {
   name                = "aws-global-connector"
   organization_id     = "myorg"
   project_id          = "myproject"
-  delegate_selectors  = ["account"]
   execute_on_delegate = true
-  azure_credentials = {
+  credentials = {
     type = "inherit_from_delegate"
-    delegate_selectors =["delegate1"]
+    delegate_selectors = ["delegate1"]
   }
 }
 ```
@@ -110,7 +108,6 @@ module "aws_cloud" {
   name                = "aws-global-connector"
   organization_id     = "myorg"
   project_id          = "myproject"
-  delegate_selectors  = ["account"]
   execute_on_delegate = true
   azure_credentials = {
     type = "irsa"

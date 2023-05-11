@@ -1,5 +1,5 @@
-# Terraform Modules for Harness Platform Core Connectors - Azure
-A collection of Terraform resources used to support the Azure connectors for the Harness Platform
+# Terraform Modules for Harness Platform Core Connectors - AWS
+A collection of Terraform resources used to support the AWS connector for the Harness Platform
 
 ## Goal
 The goal of this repository is to provide simple to consume versions of the Harness Terraform resources in such a way to make the management of Harness via Terraform easy to adopt.
@@ -46,6 +46,9 @@ module "harness_connectors" {
 
 ## Additional Module Details
 _This module is really designed to be driven by leveraging the submodules.  For more information on each of these, you can review the associated README file_
+
+### AWS
+Create and manage new Harness Platform AWS Connectors.  Read more about this module in the [README](modules/aws/README.md)
 
 ### Azure
 Create and manage new Harness Platform Azure Connectors.  Read more about this module in the [README](modules/azure/README.md)

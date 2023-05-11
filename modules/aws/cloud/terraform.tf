@@ -1,6 +1,6 @@
 ####################
 #
-# Harness Connector Azure Cloud Provider Requirements
+# Harness Connector AWS Cloud Provider Requirements
 #
 ####################
 terraform {

@@ -1,6 +1,6 @@
 ####################
 #
-# Harness Connector Azure Cloud Outputs
+# Harness Connector AWS Cloud Outputs
 #
 ####################
 output "connector_details" {
