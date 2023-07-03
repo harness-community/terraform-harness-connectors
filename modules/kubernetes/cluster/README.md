@@ -94,6 +94,7 @@ _Note: Only one of the credential blocks can be provided.  If not chosen, the cr
 | username_credentials | [Optional] Username Based Authentication Credentials | map | | See block definition below |
 | certificate_credentials | [Optional] Certificate Based Authentication Credentials | map | | See block definition below |
 | openid_connect_credentials | [Optional] Certificate Based Authentication Credentials | map | | See block definition below |
+| case_sensitive | [Optional] Should identifiers be case sensitive by default? (Note: Setting this value to `true` will retain the case sensitivity of the identifier) | bool | false | |
 | tags | [Optional] Provide a Map of Tags to associate with the project | map(any) | {} | |
 | global_tags | [Optional] Provide a Map of Tags to associate with the project and resources created | map(any) | {} | |
 

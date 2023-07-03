@@ -94,6 +94,7 @@ _Note: Only one of the credential blocks can be provided.  If not chosen, the cr
 | validation_repo | [Optional] Repository to test the connection with. This is only used when connection_type is Account. | string | null | |
 | github_credentials | [Required] GitHub Connector Credentials. | map | | See block definition below |
 | api_credentials | [Optional] GitHub API Credentials. | map | | See block definition below |
+| case_sensitive | [Optional] Should identifiers be case sensitive by default? (Note: Setting this value to `true` will retain the case sensitivity of the identifier) | bool | false | |
 | tags | [Optional] Provide a Map of Tags to associate with the project | map(any) | {} | |
 | global_tags | [Optional] Provide a Map of Tags to associate with the project and resources created | map(any) | {} | |
 
