@@ -6,16 +6,15 @@
 locals {
   connectors_kubernetes_outputs = flatten([
     {
-      test                   = true
-      minimum                = module.connector_kubernetes_cluster_minimal.connector_details
-      delegate_auth          = module.connector_kubernetes_cluster_delegate_auth.connector_details
-      service_account        = module.connector_kubernetes_cluster_service_account.connector_details
-      username               = module.connector_kubernetes_cluster_username.connector_details
-      username_secret        = module.connector_kubernetes_cluster_username_secret.connector_details
-      certificate            = module.connector_kubernetes_cluster_certificate.connector_details
-      certificate_ca_cert    = module.connector_kubernetes_cluster_certificate_ca_cert.connector_details
-      certificate_passphrase = module.connector_kubernetes_cluster_certificate_passphrase.connector_details
-      openid_connect         = module.connector_kubernetes_cluster_openid_connect.connector_details
+      connector_kubernetes_cluster_minimal                = module.connector_kubernetes_cluster_minimal.details
+      connector_kubernetes_cluster_delegate_auth          = module.connector_kubernetes_cluster_delegate_auth.details
+      connector_kubernetes_cluster_service_account        = module.connector_kubernetes_cluster_service_account.details
+      connector_kubernetes_cluster_username               = module.connector_kubernetes_cluster_username.details
+      connector_kubernetes_cluster_username_secret        = module.connector_kubernetes_cluster_username_secret.details
+      connector_kubernetes_cluster_certificate            = module.connector_kubernetes_cluster_certificate.details
+      connector_kubernetes_cluster_certificate_ca_cert    = module.connector_kubernetes_cluster_certificate_ca_cert.details
+      connector_kubernetes_cluster_certificate_passphrase = module.connector_kubernetes_cluster_certificate_passphrase.details
+      connector_kubernetes_cluster_openid_connect         = module.connector_kubernetes_cluster_openid_connect.details
     }
   ])
 }

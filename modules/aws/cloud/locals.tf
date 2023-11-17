@@ -1,6 +1,6 @@
 ####################
 #
-# Harness Connector SCM GitHub Local Variables
+# Harness Connector AWS Cloud Local Variables
 #
 ####################
 locals {
@@ -42,6 +42,4 @@ locals {
     :
     var.identifier
   )
-
-
 }

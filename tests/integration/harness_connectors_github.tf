@@ -6,12 +6,11 @@
 locals {
   connectors_github_outputs = flatten([
     {
-      test            = true
-      minimum         = module.connector_github_minimal.connector_details
-      username_secret = module.connector_github_username_secret.connector_details
-      ssh_key         = module.connector_github_ssh.connector_details
-      api_token       = module.connector_github_api_token.connector_details
-      api_github_app  = module.connector_github_api_github_app.connector_details
+      connector_github_minimal         = module.connector_github_minimal.details
+      connector_github_username_secret = module.connector_github_username_secret.details
+      connector_github_ssh             = module.connector_github_ssh.details
+      connector_github_api_token       = module.connector_github_api_token.details
+      connector_github_api_github_app  = module.connector_github_api_github_app.details
     }
   ])
 }
