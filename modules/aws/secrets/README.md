@@ -47,40 +47,22 @@ _Note: When the identifier variable is not provided, the module will automatical
 | organization_id | [Optional] Provide an organization reference ID. Must exist before execution | string | null | |
 | project_id | [Optional] Provide an project reference ID. Must exist before execution | string | null | |
 | description | [Optional] Description of the resource. | string | Harness Connector created via Terraform | |
-| execute_on_delegate | [Optional] Execute on delegate or not. | boolean | true | |
 | credentials | [Required] AWS Connector Credentials. | map | | See block definition below |
 | case_sensitive | [Optional] Should identifiers be case sensitive by default? (Note: Setting this value to `true` will retain the case sensitivity of the identifier) | bool | false | |
 | tags | [Optional] Provide a Map of Tags to associate with the project | map(any) | {} | |
 | global_tags | [Optional] Provide a Map of Tags to associate with the project and resources created | map(any) | {} | |
-| cross_account_access | [Optional] ARN of the AWS Role to Assume. | map |  | See block definition below |
-| backoff_strategy | [Optional] Backoff Strategy | map |  | See block definition below |
 
 ### Variables - credentials
 
 | Name | Description | Type | Default Value | Mandatory |
 | --- | --- | --- | --- | --- |
-| type | [Required] Type can either be manual, irsa or inherit_from_delegate. | string |  | X |
+| type | [Required] Type can either be manual, assume_role or inherit_from_delegate. | string |  | X |
+| delegate_selectors | [Conditionally Required] For Type 'assume_role' or 'inherit_from_delegate', you must supply a list of 'delegate_selectors' for the connection | list |  | |
 | secret_key_ref | [Conditionally Required] Harness Secret reference value to be used for the AWS Secret Key.  Required if type == manual | string | | |
-| access_key | [Conditionally Required] AWS Access Key.  Required if type == manual. | string | ||
 | access_key_ref | [Conditionally Required] AWS Access Key stored as a harness secret.  Required if type == manual. | string | ||
-| delegate_selectors | [Conditionally Required] Tags to filter delegates for connection.  Required if type = "irsa" or "inherit_from_delegate" | list(string) | | |
-
-### Variables - cross_account_access
-
-| Name | Description | Type | Default Value | Mandatory |
-| --- | --- | --- | --- | --- |
-| role_arn | [Required] AWS ARN of the role to be assumed | string |  | X |
-| external_id | If the administrator of the account to which the role belongs provided you with an external ID, then enter that value. | string | | |
-
-### Variables - backoff_strategy
-
-| Name | Description | Type | Default Value | Mandatory |
-| --- | --- | --- | --- | --- |
-| type | [Required] Supported Backoff types - equal_jitter, full_jitter, or fixed_delay | string |  | X |
-| base_delay | [Optional] Base delay for the backup | number | | 0 |
-| max_backoff_time | [Optional] Maximum Backoff Time | number | | 0 |
-| fixed_backoff | [Optional] Fixed Backoff.  Only valid for `fixed_delay` type | number | | 0 |
-| retry_count | [Optional] Retry Count | number | | 0 |
+| role_arn | [Conditionally Required] AWS ARN of the role to be assumed.  Required if type == assume_role | string |  | X |
+| external_id | [Optional] If the administrator of the account to which the role belongs provided you with an external ID, then enter that value.  Required if type == assume_role | string | | |
+| duration | [Conditionally Required] (Number) The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) to 3600 seconds (1 hour). By default, the value is set to 3600 seconds. An expiration can also be specified in the client request body. The minimum value is 1 hour.  Required if type == assume_role | number | 3600 ||
 
 
 ## Examples
@@ -88,31 +70,31 @@ Note:  For more information on referencing secrets see: https://developer.harnes
 
 ### Build a single Connector using manual credentials
 ```
-module "aws_cloud" {
-  source  = "harness-community/delivery/harness//modules/aws/cloud"
+module "aws_secrets" {
+  source  = "harness-community/delivery/harness//modules/aws/secrets"
 
   name                = "aws-global-connector"
   organization_id     = "myorg"
   project_id          = "myproject"
-  execute_on_delegate = true
+
   credentials = {
     type = "manual"
-    access_key = "AWS_ACCESS_KEY"
+    access_key_ref = "AWS_ACCESS_KEY REF"
     secret_key_ref = "HARNESS_SECRET REF"
 }
 ```
 
-### Build a single Connector using manual credentials assigned Identity
+### Build a single Connector using credentials on delegate
 ```
-module "aws_cloud" {
-  source  = "harness-community/delivery/harness//modules/aws/cloud"
+module "aws_secrets" {
+  source  = "harness-community/delivery/harness//modules/aws/secrets"
 
   name                = "aws-global-connector"
   organization_id     = "myorg"
   project_id          = "myproject"
-  execute_on_delegate = true
+
   credentials = {
-    type = "inherit_from_delegate"
+    type               = "inherit_from_delegate"
     delegate_selectors = ["delegate1"]
   }
 }
@@ -120,18 +102,21 @@ module "aws_cloud" {
 
 
 
-### Build a single Connector using delegate irsa Identity
+### Build a single Connector assuming Role Using STS on Delegate
 ```
-module "aws_cloud" {
-  source  = "harness-community/delivery/harness//modules/aws/cloud"
+module "aws_secrets" {
+  source  = "harness-community/delivery/harness//modules/aws/secrets"
 
   name                = "aws-global-connector"
   organization_id     = "myorg"
   project_id          = "myproject"
-  execute_on_delegate = true
+
   credentials = {
-    type = "irsa"
-    delegate_selectors =["delegate1"]
+    type        = "assume_role"
+    role_arn    = "somerolearn"
+    external_id = "externalid"
+    duration    = 900
+    delegate_selectors = ["delegate1"]
   }
 }
 ```

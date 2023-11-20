@@ -17,6 +17,7 @@ resource "harness_platform_project" "test" {
   color      = "#0063F7"
   tags       = ["purpose:terraform-testing"]
 }
+
 resource "time_sleep" "pre_load_dependencies" {
   depends_on = [
     harness_platform_organization.test,
@@ -26,7 +27,6 @@ resource "time_sleep" "pre_load_dependencies" {
   create_duration  = "15s"
   destroy_duration = "15s"
 }
-
 
 resource "harness_platform_secret_text" "test" {
   depends_on = [
