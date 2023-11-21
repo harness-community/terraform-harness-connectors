@@ -7,3 +7,9 @@ output "connectors_kubernetes" {
 output "connectors_github" {
   value = local.connectors_github_outputs
 }
+output "connectors_aws" {
+  value = local.connectors_aws_outputs
+}
+output "connectors_aws_sm" {
+  value = local.connectors_aws_sm_outputs
+}

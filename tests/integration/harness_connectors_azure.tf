@@ -6,11 +6,11 @@
 locals {
   connectors_azure_outputs = flatten([
     {
-      minimum                       = module.connector_azure_cloud_minimal.connector_details
-      delegate_system               = module.connector_azure_cloud_delegate_system.connector_details
-      delegate_user                 = module.connector_azure_cloud_delegate_user.connector_details
-      service_principal_secret      = module.connector_azure_cloud_service_principal_secret.connector_details
-      service_principal_certificate = module.connector_azure_cloud_service_principal_cert.connector_details
+      connector_azure_cloud_minimal                  = module.connector_azure_cloud_minimal.details
+      connector_azure_cloud_delegate_system          = module.connector_azure_cloud_delegate_system.details
+      connector_azure_cloud_delegate_user            = module.connector_azure_cloud_delegate_user.details
+      connector_azure_cloud_service_principal_secret = module.connector_azure_cloud_service_principal_secret.details
+      connector_azure_cloud_service_principal_cert   = module.connector_azure_cloud_service_principal_cert.details
     }
   ])
 }

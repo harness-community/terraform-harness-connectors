@@ -31,7 +31,7 @@ resource "harness_platform_connector_kubernetes" "cluster" {
   # [Optional] (String) Unique identifier of the project.
   project_id = var.project_id
   # [Optional] (Set of String) Tags to associate with the resource.
-  tags = local.common_tags
+  tags = local.common_tags_tuple
 
   # [Optional] (Block List, Max: 1) Credentials are inherited from the delegate. (see below for nested schema)
   dynamic "inherit_from_delegate" {

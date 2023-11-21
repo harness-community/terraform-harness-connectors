@@ -23,7 +23,7 @@ resource "harness_platform_connector_azure_cloud_provider" "azure" {
   # [Optional] (String) Unique identifier of the project.
   project_id = var.project_id
   # [Optional] (Set of String) Tags to associate with the resource.
-  tags = local.common_tags
+  tags = local.common_tags_tuple
 
   # [Required] (Block List, Min: 1, Max: 1) Contains Azure connector credentials.
   dynamic "credentials" {

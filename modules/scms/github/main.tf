@@ -131,7 +131,7 @@ resource "harness_platform_connector_github" "github" {
   }
 
   # [Optional] (Set of String) Tags to associate with the resource.
-  tags = local.common_tags
+  tags = local.common_tags_tuple
 
 }
 
